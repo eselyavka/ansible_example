@@ -1,0 +1,5 @@
+# Global config file for local deployment
+srcgeoipdat: ~/vagrant/GeoIPCity.dat
+dstgeoipdat: /vagrant/GeoIPCity.dat
+rnuminstance: 4
+timezone: Europe/Moscow

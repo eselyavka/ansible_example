@@ -1,0 +1,13 @@
+---
+- hosts: localbox
+  vars_files:
+    - global_local.yml
+  sudo: yes
+  roles:
+      - common
+#      - twemproxy
+#      - redis
+#      - database
+#      - memcached
+#      - nginx
+#      - app

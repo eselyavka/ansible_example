@@ -1,0 +1,4 @@
+**/.vagrant
+**/*.war
+**/*.dat
+**/*.retry
