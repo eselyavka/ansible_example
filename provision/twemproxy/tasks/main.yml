@@ -1,0 +1,50 @@
+- name: 'install dev group'
+  yum:
+    name: "@Development tools"
+    state: present
+
+- name: 'unpack archive'
+  unarchive:
+    src: /vagrant/nutcracker-0.4.1.tar.gz
+    dest: /tmp
+    remote_src: yes
+
+- name: 'build nutcracker'
+  command: "{{ item }} chdir=/tmp/nutcracker-0.4.1 creates=/usr/local/sbin/nutcracker"
+  with_items:
+    - ./configure
+    - make
+    - make install
+
+- name: 'ensure conf dir'
+  file:
+    path: /etc/nutcracker
+    state: directory
+    mode: 0755
+
+- name: 'copy config'
+  command: cp conf/nutcracker.yml /etc/nutcracker chdir=/tmp/nutcracker-0.4.1 creates=/etc/nutcracker/nutcracker.yml
+
+- name: 'copy startup script'
+  command: cp scripts/nutcracker.init /etc/init.d/nutcracker chdir=/tmp/nutcracker-0.4.1 creates=/etc/init.d/nutcracker
+
+- name: 'set executable'
+  file:
+    path: /etc/init.d/nutcracker
+    state: file
+    mode: 0755
+
+- name: 'alternatives link for nutcracker'
+  alternatives:
+    name: nutcracker
+    link: /usr/bin/nutcracker
+    path: /usr/local/sbin/nutcracker
+
+- name: 'backup origin config'
+  command: mv /etc/nutcracker/nutcracker.yml /etc/nutcracker/nutcracker.yml.origin removes=/etc/nutcracker/nutcracker.yml
+  when: ( ec2_private_ip_address is defined and ec2_private_ip_address in groups['tag_role_twemproxy']) or (inventory_hostname in groups['localbox'])
+
+- name: 'generate config from template'
+  template: src=nutcracker.yml.j2 dest=/etc/nutcracker/nutcracker.yml
+  when: ( ec2_private_ip_address is defined and ec2_private_ip_address in groups['tag_role_twemproxy']) or (inventory_hostname in groups['localbox'])
+  notify: restart nutcracker

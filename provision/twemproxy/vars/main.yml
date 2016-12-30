@@ -1,0 +1,7 @@
+nutcrackeropts:
+  address: 0.0.0.0
+  port: 22121
+  hash: fnv1a_64
+  distr: ketama
+  retry_timeout: 2000
+  failuer_limit: 5

@@ -1,0 +1,23 @@
+{{ ec2_tag_Name|default(inventory_hostname) }}:
+  listen: {{ nutcrackeropts.address }}:{{ nutcrackeropts.port }}
+  hash: {{ nutcrackeropts.hash }}
+  hash_tag: "{}"
+  distribution: {{ nutcrackeropts.distr }}
+  redis: true
+  server_retry_timeout: {{ nutcrackeropts.retry_timeout }}
+  server_failure_limit: {{ nutcrackeropts.failuer_limit }}
+  auto_eject_hosts: true
+  preconnect: true
+  timeout: 500
+  servers:
+  {% if groups['tag_role_redis'] is defined %}
+  {%- for r in groups['tag_role_redis'] -%}
+  {% for p in range(0, rnuminstance) %}
+    - {{ r }}:{{ p | int + 6379 }}:{{ weight }}
+  {% endfor %}
+  {%- endfor -%}
+  {% else %}
+  {%- for p in range(0, rnuminstance) %}
+    - 127.0.0.1:{{ p | int + 6379 }}:{{ weight }}
+  {% endfor %}
+  {% endif %}

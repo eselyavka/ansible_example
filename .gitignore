@@ -2,3 +2,4 @@
 **/*.war
 **/*.dat
 **/*.retry
+**/*.tar.gz
