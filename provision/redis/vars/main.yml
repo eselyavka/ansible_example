@@ -1,0 +1,14 @@
+redispackages:
+ - redis32u
+
+redisinstances:
+  - redis_6379
+  - redis_6380
+  - redis_6381
+  - redis_6382
+
+redisconf:
+  loglevel: debug
+  databases: 4
+  maxmemory: 536870912
+  luatimelimit: 500

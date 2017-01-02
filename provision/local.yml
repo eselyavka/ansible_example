@@ -6,7 +6,7 @@
   roles:
       - common
       - twemproxy
-#      - redis
+      - redis
 #      - database
 #      - memcached
 #      - nginx

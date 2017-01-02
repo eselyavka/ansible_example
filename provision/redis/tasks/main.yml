@@ -1,0 +1,21 @@
+- name: 'install redis'
+  yum: name={{ item }} state=present
+  with_items: "{{ redispackages }}"
+
+- name: 'disable and stop default redis services'
+  service: name=redis state=stopped enabled=no
+
+- name: 'backup origin redis config'
+  command: mv /etc/redis.conf /etc/redis.conf.origin removes=/etc/redis.conf
+
+- name: 'generate config from template'
+  template: src='redis.conf.j2' dest=/etc/redis_{{ item | int + 6379 }}.conf
+  with_sequence: start=0 end={{ rnuminstance | int -1 }}
+
+- name: 'generate init scripts from template'
+  template: src='redis.j2' dest=/etc/init.d/redis_{{ item | int + 6379 }} mode=0755
+  with_sequence: start=0 end={{ rnuminstance | int -1 }}
+
+- name: 'noop command to restart all redis instances'
+  command: /bin/true
+  notify: 'restart redis instances'
