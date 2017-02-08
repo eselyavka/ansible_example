@@ -1,7 +1,7 @@
 Vagrant.configure("2") do |config|
   config.vm.box = "dongmyo/centos-6.5-lamp-tomcat-maven"
   config.vm.box_check_update = false
-  config.vm.hostname = "machine01"
+  config.vm.hostname = "ansible01"
   config.vm.post_up_message = "may be some instruction for developers"
   config.vm.provider "virtualbox" do |v|
     v.name = "Test App deploy"

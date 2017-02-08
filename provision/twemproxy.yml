@@ -1,0 +1,8 @@
+---
+- hosts: tag_redis_group:localbox
+  vars_files: 
+    - global_aws.yml
+    - group_vars/tag_role_redis
+  roles:
+    - common
+    - twemproxy

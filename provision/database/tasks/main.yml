@@ -1,0 +1,44 @@
+- name: 'install pgsql repo'
+  yum: name={{ pgsqlrepo }} state=present
+
+- name: 'install pgsql'
+  yum: name={{ item }} state=present
+  with_items: "{{ pgsqlpackages }}"
+
+- name: 'initdb postgres'
+  command: service "{{ pgsrv }}" initdb creates="{{ pgdb.conf }}"
+
+- name: 'enable and start services'
+  service: name="{{ pgsrv }}" state=started enabled=yes
+
+- name: 'custom pg_hba.conf'
+  file:
+    path: "{{ pgdb.hba }}"
+    state: absent
+
+- name: 'passwordless access'
+  lineinfile: dest="{{ pgdb.hba }}"
+                 regexp="{{ item.regexp }}"
+                 line="{{ item.line }}"
+                 insertbefore=BOF
+                 create=yes
+  with_items:
+    - { regexp: 'host\s+all\s+all\s+127.0.0.1/32\s+trust', line: 'host all all 127.0.0.1/32 trust' }
+    - { regexp: 'local\s+all\s+all\s+trust', line: 'local all all trust' }
+  notify:
+    - restart postgresql
+
+- name: 'add test user'
+  postgresql_user: db=template1 login_host={{ pgdb.pghost }} login_user={{ pgdb.pgroot }} user={{ pgdb.user }} password={{ pgdb.password }}
+
+- name: 'create test db'
+  postgresql_db: name={{ pgdb.dbname }} login_host={{ pgdb.pghost }} login_user={{ pgdb.pgroot }} owner={{ pgdb.user }} template=template0
+
+- name: 'cleanup dest dir for appdb dir'
+  file: path={{ appdbdir }} state=absent
+
+- name: 'fetch database schema'
+  git: repo=git://github.com/eselyavka/{{ appdbreponame }} dest={{ appdbdir }}
+
+- name: 'build appdb'
+  command: chdir={{ appdbdir }}/{{ appdbname }} mvn resources:resources -DdataSource.project.driverClass={{ dbdriver }} -DdataSource.project.jdbcURL={{ dburl }} -DdataSource.project.user={{ pgdb.dbname }} -DdataSource.project.password={{ pgdb.password }} liquibase:update

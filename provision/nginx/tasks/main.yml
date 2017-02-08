@@ -1,0 +1,19 @@
+- name: 'install nginx'
+  yum: name={{ item }} state=present
+  with_items: "{{ nginxpackages }}"
+
+- name: 'enable and start services'
+  service: name=nginx state=started enabled=yes
+
+- name: 'backup nginx default config'
+  command: mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.origin removes=/etc/nginx/conf.d/default.conf
+
+- name: 'backup nginx upstream config'
+  command: mv /etc/nginx/conf.d/upstreams.conf /etc/nginx/conf.d/upstreams.conf.origin removes=/etc/nginx/conf.d/upstreams.conf
+
+- name: 'generate default nginx config'
+  template: src=nginx_default_conf.j2 dest=/etc/nginx/conf.d/default.conf
+
+- name: 'generate nginx upstream config'
+  template: src=nginx_upstreams_conf.j2 dest=/etc/nginx/conf.d/upstreams.conf
+  notify: 'restart nginx'

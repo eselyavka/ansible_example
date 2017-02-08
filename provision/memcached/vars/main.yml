@@ -1,0 +1,9 @@
+memcachedpackages:
+  - memcached
+
+memcachedopts:
+  port: 11211
+  user: 'memcached'
+  maxconn: 8192
+  cachesize: 64
+  opt: '-M'

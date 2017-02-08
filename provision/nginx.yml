@@ -1,0 +1,7 @@
+---
+- hosts: tag_role_app:tag_role_nginx:localbox
+  vars_files: 
+    - global_aws.yml
+  roles:
+    - common
+    - nginx

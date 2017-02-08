@@ -1,0 +1,13 @@
+- name: 'install memcached'
+  yum: name={{ item }} state=present
+  with_items: "{{ memcachedpackages }}"
+
+- name: 'enable and start services'
+  service: name=memcached state=started enabled=yes
+
+- name: 'backup origin config'
+  command: mv /etc/sysconfig/memcached /etc/sysconfig/memcached.origin removes=/etc/sysconfig/memcached
+
+- name: 'generate config from template'
+  template: src=memcached.j2 dest=/etc/sysconfig/memcached
+  notify: 'restart memcached'

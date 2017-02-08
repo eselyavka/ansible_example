@@ -7,7 +7,7 @@
       - common
       - twemproxy
       - redis
-#      - database
-#      - memcached
-#      - nginx
+      - database
+      - memcached
+      - nginx
 #      - app

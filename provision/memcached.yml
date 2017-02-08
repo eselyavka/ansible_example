@@ -1,0 +1,7 @@
+---
+- hosts: tag_role_memcached:localbox
+  vars_files: 
+    - global_aws.yml
+  roles:
+    - common
+    - memcached

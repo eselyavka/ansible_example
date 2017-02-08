@@ -1,0 +1,20 @@
+pgsqlrepo: https://download.postgresql.org/pub/repos/yum/9.5/redhat/rhel-6-x86_64/pgdg-centos95-9.5-3.noarch.rpm
+pgsqlpackages:
+  - postgresql95
+  - postgresql95-server
+  - postgresql95-contrib
+  - python-psycopg2
+pgsrv: postgresql-9.5
+pgdb:
+  conf: /var/lib/pgsql/9.5/data/postgresql.conf
+  hba: /var/lib/pgsql/9.5/data/pg_hba.conf
+  pghost: 127.0.0.1
+  pgroot: postgres
+  user: tst
+  password: s3cr3t
+  dbname: tst
+appdbreponame: java
+appdbname: mvn_liquibase
+appdbdir: /tmp/git/app-db
+dbdriver: org.postgresql.Driver
+dburl: jdbc:postgresql://localhost/tst

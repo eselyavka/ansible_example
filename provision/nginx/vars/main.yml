@@ -1,0 +1,10 @@
+nginxpackages:
+  - nginx
+
+nginxopts:
+  listen: 80
+  srv_name: 'default'
+  upstreams:
+    - { host: localhost, port: 8080 }
+    - { host: localhost, port: 8081 }
+    - { host: localhost, port: 8082 }

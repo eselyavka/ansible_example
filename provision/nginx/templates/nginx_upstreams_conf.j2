@@ -1,0 +1,6 @@
+upstream local_tomcats  {
+    {% for h in nginxopts.upstreams %}
+    server {{ h.host }}:{{ h.port }} fail_timeout=1s max_fails=1;
+    {% endfor %}
+    keepalive 32;
+}

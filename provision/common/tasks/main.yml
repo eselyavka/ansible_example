@@ -73,5 +73,8 @@
   yum: name={{ item }} state=present
   with_items: "{{ packages }}"
 
+- name: 'remove httpd package'
+  yum: name=httpd state=absent
+
 - name: 'start needed services'
   service: name=ntpd state=started enabled=yes
