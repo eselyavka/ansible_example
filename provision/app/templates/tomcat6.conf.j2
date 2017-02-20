@@ -1,0 +1,62 @@
+# System-wide configuration file for tomcat services
+# This will be sourced by tomcat and any secondary service
+# Values will be overridden by service-specific configuration
+# files in /etc/sysconfig
+#
+# Use this one to change default values for all services
+# Change the service specific ones to affect only one service
+# (see, for instance, /etc/sysconfig/tomcat)
+#
+
+# Where your java installation lives
+#JAVA_HOME="/usr/lib/jvm/jre"
+ulimit -n 32000
+OPENFILES=32000
+
+# Where your tomcat installation lives
+CATALINA_BASE="{{ item.catalinabase }}"
+CATALINA_HOME="{{ item.catalinahome }}"
+JASPER_HOME="{{ item.jasperhome }}"
+CATALINA_TMPDIR="{{ item.catalinatmpdir }}"
+
+# You can pass some parameters to java here if you wish to
+#JAVA_OPTS="-Xminf0.1 -Xmaxf0.3"
+
+# Use JAVA_OPTS to set java.library.path for libtcnative.so
+#JAVA_OPTS="-Djava.library.path=/usr/lib"
+
+# What user should run tomcat
+TOMCAT_USER="tomcat"
+
+# You can change your tomcat locale here
+#LANG="en_US"
+
+# Run tomcat under the Java Security Manager
+SECURITY_MANAGER="false"
+
+# Time to wait in seconds, before killing process
+SHUTDOWN_WAIT="30"
+
+# Whether to annoy the user with "attempting to shut down" messages or not
+SHUTDOWN_VERBOSE="false"
+
+# Set the TOMCAT_PID location
+CATALINA_PID="{{ item.catalinapid }}"
+
+# Connector port is 8080 for this tomcat instance
+CONNECTOR_PORT="{{ item.port }}"
+
+# If you wish to further customize your tomcat environment,
+# put your own definitions here
+# (i.e. LD_LIBRARY_PATH for some jdbc drivers)
+
+GCOPTS="$GCOPTS -XX:+UseAdaptiveGCBoundary -XX:+CMSParallelRemarkEnabled -XX:+UseConcMarkSweepGC -XX:+UseLWPSynchronization -XX:+UseParNewGC -XX:+UsePerfData -XX:CMSInitiatingOccupancyFraction=58 -XX:ParallelGCThreads=12 -XX:+UseCMSCompactAtFullCollection -XX:-UseAdaptiveSizePolicy"
+
+PERFOPTS="-server -XX:+UseCompressedOops -XX:+DoEscapeAnalysis -XX:+AggressiveOpts -XX:+UseLargePages -XX:+AlwaysPreTouch -Dorg.apache.tomcat.util.net.NioSelectorShared=false"
+
+MEMOPTS="-Xms{{ item.xms }} -Xmx{{item.xmx }} -XX:MaxDirectMemorySize={{ item.maxdirectmem }}"
+
+MISCOPTS="-Dfile.encoding=UTF-8"
+
+### Put all of our options together
+JAVA_OPTS="$GCOPTS $PERFOPTS $MEMOPTS $SNMPOPTS $MISCOPTS"

@@ -25,8 +25,10 @@
   with_items:
     - { regexp: 'host\s+all\s+all\s+127.0.0.1/32\s+trust', line: 'host all all 127.0.0.1/32 trust' }
     - { regexp: 'local\s+all\s+all\s+trust', line: 'local all all trust' }
-  notify:
-    - restart postgresql
+
+- name: 'noop command to restart postgresql instance'
+  command: /bin/true
+  notify: 'restart postgresql'
 
 - name: 'add test user'
   postgresql_user: db=template1 login_host={{ pgdb.pghost }} login_user={{ pgdb.pgroot }} user={{ pgdb.user }} password={{ pgdb.password }}

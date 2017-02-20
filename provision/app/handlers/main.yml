@@ -1,0 +1,2 @@
+- name: 'restart tomcat instance'
+  service: name=tomcat6 state=restarted enabled=yes

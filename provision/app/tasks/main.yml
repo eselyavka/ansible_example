@@ -1,0 +1,46 @@
+- name: 'install app packages'
+  yum: name=tomcat6 state=present
+
+- name: 'disable and stop services'
+  service: name=tomcat6 state=stopped enabled=no
+
+- name: 'apply sysctl'
+  sysctl: name={{ item.key }} value='{{ item.value.value }}' state=present ignoreerrors=yes
+  with_dict: "{{ sysctls }}"
+
+- name: 'backup origin config'
+  command: mv /etc/tomcat6/{{ item.srcfile }} /etc/tomcat6/{{ item.destfile }} creates=/etc/tomcat6/{{ item.destfile }}
+  with_items:
+    - { srcfile: 'tomcat6.conf', destfile: 'tomcat6.conf.dist'}
+
+- name: 'generate tomcat config from templates'
+  template: src={{ item.src }} dest={{ item.dest }} owner=tomcat group=tomcat
+  with_items: 
+    - { src: 'tomcat6.conf.j2', dest: '/etc/tomcat6/tomcat6.conf', catalinabase: '/usr/share/tomcat6/', catalinahome: '/usr/share/tomcat6', jasperhome: '/usr/share/tomcat6', catalinatmpdir: '/var/cache/tomcat6/temp', catalinapid: '/var/run/tomcat.pid', port: '8080', xms: "{{ xms }}", xmx: "{{ xmx }}", maxdirectmem: "{{ maxdirectmem }}" }
+
+- name: 'fetch app'
+  git: repo="git://github.com/eselyavka/{{ app.reponame }}" dest="{{ app.repodir }}"
+
+- name: 'build appdb'
+  command: creates="{{ app.repodir }}/appsrv/target/appsrv-test.war" chdir="{{ app.repodir }}/appsrv" mvn clean package
+
+- name: 'enable and stop services'
+  service: name=tomcat6 state=stopped enabled=yes
+
+- file: path="{{ app.artdir }}" state=directory owner=tomcat group=tomcat
+
+- file: path="{{ app.artdir }}/appsrv-test.war" state=absent
+
+- file: path="{{ app.artdir }}/appsrv-test" state=absent
+
+- command: chdir="{{ app.repodir }}/appsrv/target" cp appsrv-test.war "{{ app.artdir }}/appsrv-test.war"
+
+- file: path="{{ app.artdir }}/appsrv-test.war" owner=tomcat group=tomcat
+
+- file: path="{{ app.geoipdir }}" state=directory owner=tomcat group=tomcat
+
+- command: creates="{{ app.geoipdir }}/{{ app.geoart }}" chdir="/vagrant/" cp "{{ app.geoart }}" "{{ app.geoipdir }}"
+
+- name: 'noop command to restart tomcat instance'
+  command: /bin/true
+  notify: 'restart tomcat instance'

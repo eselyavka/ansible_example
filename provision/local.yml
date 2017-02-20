@@ -10,4 +10,4 @@
       - database
       - memcached
       - nginx
-#      - app
+      - app
