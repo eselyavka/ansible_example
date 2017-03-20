@@ -1,0 +1,4 @@
+# Global variable file for aws deployment
+srcgeoipdat: ~/vagrant/GeoIPCity.dat
+dstgeoipdat: /vagrant/GeoIPCity.dat
+timezone: Europe/Moscow

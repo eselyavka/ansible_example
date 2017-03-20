@@ -1,0 +1,4 @@
+weight: 1
+xmx: 256M
+xms: 256M
+maxdirectmem: 128M
