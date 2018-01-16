@@ -1,0 +1,32 @@
+- name: 'set srv dev yaml'
+  set_fact:
+    srv_dev: |
+     {% for disk in  ansible_devices.keys() if  ansible_devices[disk].removable == '0' and 'sd' in disk %}
+      - "{{ disk }}"
+     {% endfor %}
+
+- name: 'test to validate dev count'
+  assert:
+    that:
+      - not {{ srv_dev | from_yaml | list |  length != disk_cnt }}
+
+- name: 'set srv luks yaml'
+  set_fact:
+    srv_luks: |
+     {% for i in  range(ansible_mounts|length) if 'luks' in ansible_mounts[i].device.lower() %}
+      - "{{ ansible_mounts[i].device }}"
+     {% endfor %}
+
+- name: 'test to validate disk count'
+  assert:
+    that:
+      - not {{ srv_luks | from_yaml | list | length != luks_cnt }}
+
+- name: 'test for available disk space'
+  assert:
+    that:
+      - not {{ item.device == '/dev/mapper/rootvg-lvroot' and item.size_total < root_s }}
+      - not {{ item.device == '/dev/mapper/rootvg-lvhome' and item.size_total < home_s }}
+      - not {{ item.device == '/dev/mapper/rootvg-lvopt' and item.size_total < opt_s }}
+      - not {{ item.device == '/dev/mapper/rootvg-lvtmp' and item.size_total < tmp_s }}
+  with_items: ansible_mounts
